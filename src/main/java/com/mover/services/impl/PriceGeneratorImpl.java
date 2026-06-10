@@ -11,6 +11,9 @@ public class PriceGeneratorImpl implements PriceGenerator {
 
     @Override
     public BigDecimal generatePrice(OrderRequest orderRequest) {
+
+        //google map api se real distance
+
         // 1. Get coordinates as BigDecimal and convert to double
         double lat1 = orderRequest.getPickupLocation().getLatitude().doubleValue();
         double lon1 = orderRequest.getPickupLocation().getLongitude().doubleValue();

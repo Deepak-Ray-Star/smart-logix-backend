@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:9.4
+    container_name: mysqldb
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "SLB2025"
+      MYSQL_DATABASE: smart-logix-backend
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - mysql-db:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pSLB2025"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  boot-app:
+    image: onekanishk/mover-app-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5633:5631"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/smart-logix-backend
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=SLB2025
+
+volumes:
+  mysql-db:
+
+networks:
+  app-network:
